@@ -1,2 +1,3 @@
-# CSE410
-Introduction to Reinforcement Learning
+# CSE410: Introduction to Reinforcement Learning
+
+This repository contains code and reports written by Peter VanNostrand for CSE 410: Introduction to Reinforcement Learning, a senior level computer science elective taught by Alina Vereshchaka at the University at Buffalo during the Spring 2020 semester. Topics include tabular based solutions, function approximation solutions, model-based reinforcement learning, imitation learning, meta-learning, multi-agent reinforcement learning, and partial observable environments. All assignments are written in Python and frequently use OpenAI Gym and other reinforcement learning libraries.
