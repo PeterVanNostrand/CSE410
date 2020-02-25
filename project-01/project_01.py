@@ -5,9 +5,10 @@ import copy
 import gym
 from gym import spaces
 from environments import DeterministicEnvironment
+from environments import StochasticEnvironment
 from agents import QAgent
 
-def train(agent, env, num_episodes):
+def train(agent, env, num_episodes, title):
     epsilon_log = [agent.epsilon]
     delta_epsilon = agent.epsilon/num_episodes
 
@@ -23,7 +24,7 @@ def train(agent, env, num_episodes):
         epsilon_log.append(agent.epsilon)
     plt.figure()
     plt.plot(epsilon_log)
-    plt.title("Epsilon over Episodes")
+    plt.title(title)
     plt.xlabel("Episode")
     plt.ylabel("Epsilon")
 
@@ -33,7 +34,6 @@ def test(agent, env, title):
     plt.suptitle(title)
     plt_size = math.ceil(math.sqrt(env.size*2.0))
     index = 1
-    print(agent.epsilon)
     agent.set_epsilon(0.0)
 
     observation = env.reset()
@@ -51,12 +51,17 @@ def test(agent, env, title):
     env.render()
 
 if __name__ == "__main__":
-    env = DeterministicEnvironment()
-    agent = QAgent(env, decay_type=1, decay_amt=0.005)
+    # Deterministic Envrionment
+    denv = DeterministicEnvironment()
+    dagent = QAgent(denv, decay_type=1, decay_amt=0.005)
+    train(dagent, denv, 1000, "Epsilon per Episode: Deterministic Environment")
+    test(dagent, denv, "QAgent in Deterministic Environment")
 
-    num_episodes = 1000
-    train(agent, env, num_episodes)
-    test(agent, env, "QAgent in Deterministic Environment")
+    # Stochastic Envrionment
+    senv = StochasticEnvironment()
+    sagent = QAgent(denv, decay_type=1, decay_amt=0.005)
+    train(sagent, senv, 1000, "Epsilon per Episode: Stochastic Environment")
+    test(sagent, senv, "QAgent in Stochastic Environment")
 
     plt.show()
 

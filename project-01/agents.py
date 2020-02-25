@@ -10,7 +10,6 @@ class RandomAgent:
         return np.random.choice(self.action_space.n)
 
 class QAgent:
-    # decay_type = 0 for linear, 1 for exponential
     def __init__(self, env, epsilon=1.0, lr=0.1, gamma=0.8, decay_type=0, decay_amt=0.001):
         self.env = env
         self.observation_space = env.observation_space
@@ -19,10 +18,11 @@ class QAgent:
         self.epsilon = epsilon
         self.lr = lr
         self.gamma = gamma
+        # decay_type = 0 for linear, 1 for exponential
         self.decay_type = decay_type
-        if decay_type==0: # linear
+        if decay_type==0:
             self.decay_amt = decay_amt
-        else: # exponential
+        else:
             self.decay_amt = 1-decay_amt
 
     def policy(self, observation):
