@@ -10,13 +10,13 @@ class LOGLEVEL(IntEnum):
     TRACE = 5
 
 class Logger():
-    def __init__(self, log_level, file_path):
+    def __init__(self, file_path, log_level=LOGLEVEL.DEBUG, write_mode="a"):
         self.log_level = log_level
-        self.log_file = open(file_path, "a")
+        self.log_file = open(file_path, write_mode)
         print("###### NEW LOG SESSION ######", file=self.log_file)
 
-    def log(self, message, level=LOGLEVEL.DEBUG, console=False):
+    def log(self, message, level=LOGLEVEL.DEBUG, console=False, end="\n"):
         if level <= self.log_level: 
-            print(message, file=self.log_file)
+            print(message, file=self.log_file, end=end)
             if console:
-                print(message)
+                print(message, end=end)

@@ -14,7 +14,7 @@ class QAgent:
         self.env = env
         self.observation_space = env.observation_space
         self.action_space = env.action_space
-        self.qtable = np.zeros((env.size+1, env.size+1, env.action_space.n))
+        self.qtable = np.zeros((env.size, env.size, env.action_space.n))
         self.epsilon = epsilon
         self.lr = lr
         self.gamma = gamma
