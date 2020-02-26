@@ -185,7 +185,7 @@ class StochasticEnvironment(gym.Env):
             for col in range(4):
                 for act in range(4):
                     # prob for actions given this row, col, act tuple
-                    p = transition_prob[row][col][act] 
+                    p = transition_prob[row][col][act]
                     p[act] = np.random.uniform(0.8, 1.0) # desired action is always >= 80% likely
                     rem = 1.0 - p[act] # remaining probability
                     for i in range(4): # randomly select other action probabilities
@@ -196,4 +196,3 @@ class StochasticEnvironment(gym.Env):
                     op = p * 100 # output probability, for print formated to XX.XX %
                     l.log(tab_row.format(R=row, C=col, A=acts[act], p0=op[0], p1=op[1], p2=op[2], p3=op[3]))
         return transition_prob
-

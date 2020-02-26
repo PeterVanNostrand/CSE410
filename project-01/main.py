@@ -106,7 +106,3 @@ if __name__ == "__main__":
     save_learned_path(sagent.qtable, file_path="results/qtable_stochastic.txt")
 
     print("See results folder for agent actions, stochastic transition probabilities, learned paths, and epsilon decay")
-
-    
-
-    

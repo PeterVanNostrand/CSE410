@@ -16,7 +16,7 @@ class Logger():
         print("###### NEW LOG SESSION ######", file=self.log_file)
 
     def log(self, message, level=LOGLEVEL.DEBUG, console=False, end="\n"):
-        if level <= self.log_level: 
+        if level <= self.log_level:
             print(message, file=self.log_file, end=end)
             if console:
                 print(message, end=end)
