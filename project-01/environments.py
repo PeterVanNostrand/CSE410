@@ -48,13 +48,14 @@ class DeterministicEnvironment(gym.Env):
         else:
             reward = 0
 
+        self.timestep += 1
+
         # Stop if the agent has reached the goal or run out of time
         if new_dist == 0 or self.timestep >= self.max_timestep:
             done = True
         else:
             done = False
 
-        self.timestep += 1
 
         observation = self.agent_pos
         info = {}
@@ -67,7 +68,7 @@ class DeterministicEnvironment(gym.Env):
     def reset(self, start_pos=[0, 0], goal_pos=None):
         if goal_pos is None:
             goal_pos = [self.size-1, self.size-1]
-        self.timestep = 0
+        self.timestep = 1
         self.agent_pos = copy.copy(start_pos)  # agent_pos[0] = ypos, agent_pos[1] = xpos
         self.goal_pos = goal_pos
         observation = self.agent_pos
@@ -95,7 +96,6 @@ class StochasticEnvironment(gym.Env):
         # 4 Possible actions: up (0), right (1), down (2), and left(3)
         self.action_space = gym.spaces.Discrete(4)
         self.max_timestep = (self.size*2) + 1
-        # TODO: Fill in transition probability matrix
         self.transition_prob = self.generate_transitions()
 
     '''
@@ -133,13 +133,13 @@ class StochasticEnvironment(gym.Env):
         else:
             reward = 0
 
+        self.timestep += 1
+
         # Stop if the agent has reached the goal or run out of time
         if new_dist == 0 or self.timestep >= self.max_timestep:
             done = True
         else:
             done = False
-
-        self.timestep += 1
 
         observation = self.agent_pos
         info = {}
@@ -152,7 +152,7 @@ class StochasticEnvironment(gym.Env):
     def reset(self, start_pos=[0, 0], goal_pos=None):
         if goal_pos is None:
             goal_pos = [self.size-1, self.size-1]
-        self.timestep = 0
+        self.timestep = 1
         self.agent_pos = copy.copy(start_pos)  # agent_pos[0] = ypos, agent_pos[1] = xpos
         self.goal_pos = goal_pos
         observation = self.agent_pos
