@@ -73,7 +73,7 @@ class QAgent:
 
 
 class DQAgent:
-    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01):
+    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24,24)):
         # def __init__(self, observation_space, action_space):
         self.epsilon = epsilon
         self.epsilon_floor = epsilon_floor
@@ -88,15 +88,15 @@ class DQAgent:
         self.observation_space = env.observation_space
 
         self.memory = deque()
-        self.model = self.generate_model()
+        self.model = self.generate_model(size)
         self.record = namedtuple(
             "Record", "state action reward next_state done")
 
-    def generate_model(self):
+    def generate_model(self, size):
         model = keras.models.Sequential()
-        model.add(keras.layers.Dense(24, input_shape=(
+        model.add(keras.layers.Dense(size[0], input_shape=(
             self.observation_space.shape[0],), activation="relu"))
-        model.add(keras.layers.Dense(24, activation="relu"))
+        model.add(keras.layers.Dense(size[1], activation="relu"))
         model.add(keras.layers.Dense(self.action_space.n, activation="linear"))
         model.compile(loss="mse", optimizer=keras.optimizers.Adam(lr=self.lr))
         return model
@@ -104,6 +104,7 @@ class DQAgent:
     def remember(self, state, action, reward, next_state, done):
         rec = self.record(state, action, reward, next_state, done)
         self.memory.append(rec)
+        self.epsilon_decay()
 
     def policy(self, observation):
         rand_num = np.random.rand()
@@ -130,7 +131,6 @@ class DQAgent:
             q_values = self.model.predict(rec.state)
             q_values[0][rec.action] = y
             self.model.fit(rec.state, q_values, verbose=0)
-        self.epsilon_decay()
 
     def epsilon_decay(self):
         if self.decay_type == 0:  # linear
