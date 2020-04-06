@@ -73,7 +73,7 @@ class QAgent:
 
 
 class DQAgent:
-    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24,24)):
+    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24)):
         # def __init__(self, observation_space, action_space):
         self.epsilon = epsilon
         self.epsilon_floor = epsilon_floor
@@ -140,8 +140,9 @@ class DQAgent:
         if self.epsilon < self.epsilon_floor:
             self.epsilon = self.epsilon_floor
 
+
 class D2QAgent:
-    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24,24)):
+    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24)):
         # def __init__(self, observation_space, action_space):
         self.epsilon = epsilon
         self.epsilon_floor = epsilon_floor
@@ -195,21 +196,22 @@ class D2QAgent:
         for rec in batch:
             # Randomly select the model to update
             if np.random.rand() < 0.5:
-                u = 0 # Update model 0
-                t = 1 # Target model 1
+                u = 0  # Update model 0
+                t = 1  # Target model 1
             else:
-                u = 1 # Update model 1
-                t = 0 # Target model 0
+                u = 1  # Update model 1
+                t = 0  # Target model 0
 
             # Compute the Q-Learning target
-            if rec.done: # For terminal nextstate --> target = reward 
+            if rec.done:  # For terminal nextstate --> target = reward
                 target = rec.reward
-            else: # Otherwise --> target = reward + gamma * Q2(s', arg max_a'(A1(s', a')))
+            # Otherwise --> target = reward + gamma * Q2(s', arg max_a'(A1(s', a')))
+            else:
                 qunext = self.models[u].predict(rec.next_state)[0]
                 astar = np.argmax(qunext)
                 qtnext = self.models[t].predict(rec.next_state)[0][astar]
                 target = rec.reward + (self.gamma * qtnext)
-            
+
             # Fit the updating model to the target
             qu = self.models[u].predict(rec.state)
             qu[0][rec.action] = target

@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 class LOGLEVEL(IntEnum):
     NOLOG = 0
     ERROR = 1
@@ -7,6 +8,7 @@ class LOGLEVEL(IntEnum):
     INFO = 3
     DEBUG = 4
     TRACE = 5
+
 
 class Logger():
     def __init__(self, file_path, log_level=LOGLEVEL.DEBUG, write_mode="a"):

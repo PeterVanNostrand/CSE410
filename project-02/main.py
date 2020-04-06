@@ -98,11 +98,12 @@ def train(agent, env, num_episodes, env_name, filepath):
         plt.ylabel("Number of Steps")
         plt.savefig(filepath + "/steps.png")
 
+
 def config_match(my_env, my_alg):
     global env_name
     global alg
-    if env_name==my_env or env_name=="all":
-        if alg==my_alg or alg=="all":
+    if env_name == my_env or env_name == "all":
+        if alg == my_alg or alg == "all":
             return True
     else:
         return False
@@ -122,27 +123,26 @@ if __name__ == "__main__":
         its = 1
         print("Running all agents all environments...")
 
-
     if config_match("cart-pole", "dqn"):
         print("Running CartPole DQN...")
         os.makedirs("./results/cart-pole/dqn", exist_ok=True)
         env = gym.make("CartPole-v1")
         agent = RLAgents.DQAgent(env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=1,
-                                     decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24))
+                                 decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24))
         train(agent, env, its, "cart-pole", "./results/cart-pole/dqn")
-    if config_match("cart-pole", "d2qn"):  
+    if config_match("cart-pole", "d2qn"):
         print("Running CartPole D2QN...")
         os.makedirs("./results/cart-pole/d2qn", exist_ok=True)
         env = gym.make("CartPole-v1")
         agent = RLAgents.D2QAgent(env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=1,
-                                    decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24))
+                                  decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24, 24))
         train(agent, env, its, "cart-pole", "./results/cart-pole/d2qn")
     if config_match("mountain-car", "dqn"):
         print("Running MountainCar DQN...")
         os.makedirs("./results/mountain-car/dqn", exist_ok=True)
         env = gym.make("MountainCar-v0")
         agent = RLAgents.DQAgent(env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=1,
-                                  decay_amt=0.998, batch_size=20, epsilon_floor=0.01, size=(128, 48))
+                                 decay_amt=0.998, batch_size=20, epsilon_floor=0.01, size=(128, 48))
         train(agent, env, its, "mountain-car", "./results/mountain-car/dqn")
     if config_match("mountain-car", "d2qn"):
         print("Running MountainCar D2QN...")
