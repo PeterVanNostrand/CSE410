@@ -120,7 +120,7 @@ if __name__ == "__main__":
     else:  # otherwise run all
         env_name = "all"
         alg = "all"
-        its = 1
+        its = 250
         print("Running all agents all environments...")
 
     if config_match("cart-pole", "dqn"):
