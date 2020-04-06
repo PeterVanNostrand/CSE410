@@ -139,3 +139,86 @@ class DQAgent:
             self.epsilon = self.epsilon * self.decay_amt
         if self.epsilon < self.epsilon_floor:
             self.epsilon = self.epsilon_floor
+
+class D2QAgent:
+    def __init__(self, env, epsilon=1.0, lr=0.001, gamma=0.95, decay_type=0, decay_amt=0.995, batch_size=20, epsilon_floor=0.01, size=(24,24)):
+        # def __init__(self, observation_space, action_space):
+        self.epsilon = epsilon
+        self.epsilon_floor = epsilon_floor
+        self.batch_size = batch_size
+        self.lr = lr
+        self.gamma = gamma
+        self.decay_amt = decay_amt
+        self.decay_type = decay_type
+
+        self.env = env
+        self.action_space = env.action_space
+        self.observation_space = env.observation_space
+
+        self.memory = deque()
+        self.models = [self.generate_model(size), self.generate_model(size)]
+        self.record = namedtuple(
+            "Record", "state action reward next_state done")
+
+    def generate_model(self, size):
+        model = keras.models.Sequential()
+        model.add(keras.layers.Dense(size[0], input_shape=(
+            self.observation_space.shape[0],), activation="relu"))
+        model.add(keras.layers.Dense(size[1], activation="relu"))
+        model.add(keras.layers.Dense(self.action_space.n, activation="linear"))
+        model.compile(loss="mse", optimizer=keras.optimizers.Adam(lr=self.lr))
+        return model
+
+    def remember(self, state, action, reward, next_state, done):
+        rec = self.record(state, action, reward, next_state, done)
+        self.memory.append(rec)
+        self.epsilon_decay()
+
+    def policy(self, observation):
+        rand_num = np.random.rand()
+        if rand_num < self.epsilon:
+            best_action = np.random.randint(self.action_space.n)
+        else:
+            qmodel = self.models[0].predict(observation)[0]
+            qtarget = self.models[1].predict(observation)[0]
+            qboth = qmodel + qtarget
+            best_action = np.argmax(qboth)
+        return best_action
+
+    def step(self, state):
+        return self.policy(state)
+
+    def replay(self):
+        if len(self.memory) < self.batch_size:
+            return
+        batch = random.sample(self.memory, self.batch_size)
+        for rec in batch:
+            # Randomly select the model to update
+            if np.random.rand() < 0.5:
+                u = 0 # Update model 0
+                t = 1 # Target model 1
+            else:
+                u = 1 # Update model 1
+                t = 0 # Target model 0
+
+            # Compute the Q-Learning target
+            if rec.done: # For terminal nextstate --> target = reward 
+                target = rec.reward
+            else: # Otherwise --> target = reward + gamma * Q2(s', arg max_a'(A1(s', a')))
+                qunext = self.models[u].predict(rec.next_state)[0]
+                astar = np.argmax(qunext)
+                qtnext = self.models[t].predict(rec.next_state)[0][astar]
+                target = rec.reward + (self.gamma * qtnext)
+            
+            # Fit the updating model to the target
+            qu = self.models[u].predict(rec.state)
+            qu[0][rec.action] = target
+            self.models[u].fit(rec.state, qu, verbose=0)
+
+    def epsilon_decay(self):
+        if self.decay_type == 0:  # linear
+            self.epsilon -= self.decay_amt
+        if self.decay_type == 1:  # exponential
+            self.epsilon = self.epsilon * self.decay_amt
+        if self.epsilon < self.epsilon_floor:
+            self.epsilon = self.epsilon_floor
