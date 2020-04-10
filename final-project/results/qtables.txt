@@ -1,0 +1,20 @@
+###### NEW LOG SESSION ######
+Learned optimal action for each state
+U=Up, R=Right, D=Down, L=Left
+
+Agent 0
+|   | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| 0 | U | U | D | D |
+| 1 | U | U | U | D |
+| 2 | U | U | U | U |
+| 3 | U | U | U | U |
+
+Agent 1
+|   | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| 0 | U | U | U | U |
+| 1 | U | U | U | U |
+| 2 | R | U | U | U |
+| 3 | R | R | U | U |
+

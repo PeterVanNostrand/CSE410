@@ -54,23 +54,13 @@ def train(agents, env, start_pos, goal_pos, num_episodes):
         states = env.reset(start_pos, goal_pos)
         done = False
         scores = [0] * env.num_agents
-        # print("Epoch {t}".format(t=t))
         while not done:
             # Get an action from each agent
-            # print("\tPosition {p0} {p1}".format(p0=states[0][0], p1=states[0][1]), end=", ")
             actions = step_agents(agents, states)
-            # print(("Action " + moves[actions[0]]).format(a=actions[0]), end=", ")
             # Apply the actions to the environment, returns new state and rewards
             next_states, rewards, done, info = env.step(actions)
-            # print("NewPos: {p0} {p1}".format(p0=next_states[0][0], p1=next_states[0][1]), end=", ")
-            # print("Reward: {r}".format(r=rewards[0]))
             for i in range(env.num_agents):
                 scores[i] += rewards[i]
-            # print(("\tAgent: 0, Pos {p0} {p1}, Act: " + moves[actions[0]] +", Rew: {r}").format(p0=states[0][0], p1=states[0][1], r=rewards[0]))
-            # print(("\tAgent: 1, Pos {p0} {p1}, Act: " + moves[actions[1]] +", Rew: {r}").format(p0=states[1][0], p1=states[1][1], a=actions[1], r=rewards[1]))
-            # env.render()
-            # print("Actions: " + moves[actions[0]] + " " + moves[actions[1]] + " Rewards: {r}".format(r=rewards))
-            # plt.pause(1.0)
             # Perform Q-Learning step on each agent
             update_agents(agents, states, actions, rewards, next_states)
             # Update the state
@@ -130,34 +120,40 @@ def test(agents, env, start_pos, goal_pos):
     env.render()
     plt.savefig("./results/movements.png")
 
-# def save_learned_path(table, file_path):
-#     # TODO - Add second agent
-#     l = Logger(file_path=file_path, write_mode="w")
-#     action_map_abbrv = ['U', 'R', 'D', 'L']
+def save_learned_path(tables, file_path):
+    # TODO - Add second agent
+    l = Logger(file_path=file_path, write_mode="w")
+    action_map_abbrv = ['U', 'R', 'D', 'L', 'N']
 
-#     l.log("Learned optimal action for each state")
-#     l.log("U=Up, R=Right, D=Down, L=Left")
+    l.log("Learned optimal action for each state")
+    l.log("U=Up, R=Right, D=Down, L=Left")
+    l.log("")
 
-#     # Print header row
-#     l.log("|   |", end="")
-#     for i in range(0, table.shape[0]):
-#         l.log(" %1d |" % (i), end="")
-#     l.log("")
+    a = 0
+    for table in tables:
+        l.log("Agent {}".format(a))
+        # Print header row
+        l.log("|   |", end="")
+        for i in range(0, table.shape[0]):
+            l.log(" %1d |" % (i), end="")
+        l.log("")
 
-#     # l.log divider row
-#     l.log("|", end="")
-#     for i in range(0, table.shape[0]+1):
-#         l.log("---|", end="")
-#     l.log("")
+        # l.log divider row
+        l.log("|", end="")
+        for i in range(0, table.shape[0]+1):
+            l.log("---|", end="")
+        l.log("")
 
-#     # Fill in rows
-#     for i in range(0, table.shape[0]):
-#         l.log("| %1d |" % (i), end="")
-#         for j in range(0, table.shape[1]):
-#             action = np.argmax(table[i, j])
-#             direction = action_map_abbrv[action]
-#             l.log(" %c |" % (direction), end="")
-#         l.log("")
+        # Fill in rows
+        for i in range(0, table.shape[0]):
+            l.log("| %1d |" % (i), end="")
+            for j in range(0, table.shape[1]):
+                action = np.argmax(table[i, j])
+                direction = action_map_abbrv[action]
+                l.log(" %c |" % (direction), end="")
+            l.log("")
+        l.log("")
+        a += 1
 
 
 if __name__ == "__main__":
@@ -184,5 +180,11 @@ if __name__ == "__main__":
     goal_pos = [env.size-1, env.size-1]
     train(agents, env, start_pos, goal_pos, 50)
     test(agents, env, start_pos, goal_pos)
+
+    # Save the learned qtable paths
+    tables = []
+    for agent in agents:
+        tables.append(agent.qtable)
+    save_learned_path(tables, "./results/qtables.txt")
 
     print("See results folder for agent actions, stochastic transition probabilities, learned paths, and epsilon decay")

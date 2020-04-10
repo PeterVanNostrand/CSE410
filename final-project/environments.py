@@ -47,7 +47,7 @@ class DeterministicEnvironment(gym.Env):
         elif action == 3:
             new_pos[1] -= 1
         else:  # action == 4, nomove
-            print("ERROR")
+            pass
 
         # Check if the new position is valid
         valid = True
@@ -68,7 +68,7 @@ class DeterministicEnvironment(gym.Env):
         # If the new position is not valid, the agent cannot move
         if not valid:
             new_pos = copy.copy(pos)
-        return new_pos
+        return valid, new_pos
 
 
 
@@ -84,8 +84,10 @@ class DeterministicEnvironment(gym.Env):
         old_positions = copy.copy(self.agents_pos)
 
         # Move the agents according to their actions, earlier agents get priority
+        valid_moves = [True] * self.num_agents
         for i in range(self.num_agents):
-            self.agents_pos[i] = self.move_agent(self.agents_pos[i], actions[i])
+            valid, self.agents_pos[i] = self.move_agent(self.agents_pos[i], actions[i])
+            valid_moves[i] = valid
 
         # Compute reward for each agent
         # Reward of +1 for approaching goal, -1 for moving farther away, 0 for no change
@@ -97,7 +99,7 @@ class DeterministicEnvironment(gym.Env):
             dists[i] = new_dist
             if new_dist < old_dist:
                 rewards[i] = 1
-            elif new_dist > old_dist:
+            elif new_dist > old_dist or valid_moves[i] is False:
                 rewards[i] = -1
             elif new_dist == old_dist:
                 if new_dist == 1:
