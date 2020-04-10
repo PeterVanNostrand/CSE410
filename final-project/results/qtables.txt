@@ -5,7 +5,7 @@ U=Up, R=Right, D=Down, L=Left
 Agent 0
 |   | 0 | 1 | 2 | 3 |
 |---|---|---|---|---|
-| 0 | U | U | D | D |
+| 0 | U | U | R | D |
 | 1 | U | U | U | D |
 | 2 | U | U | U | U |
 | 3 | U | U | U | U |
